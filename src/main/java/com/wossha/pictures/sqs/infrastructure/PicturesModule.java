@@ -1,6 +1,7 @@
 package com.wossha.pictures.sqs.infrastructure;
 
 import com.google.inject.AbstractModule;
+import com.wossha.pictures.sqs.infrastructure.s3.DeleteObject;
 import com.wossha.pictures.sqs.infrastructure.sqs.removePictureEvent.RemovePictureEventListener;
 import com.wossha.pictures.sqs.infrastructure.sqs.savePictureEvent.SavePictureEventListener;
 
@@ -42,9 +43,11 @@ public class PicturesModule extends AbstractModule {
         
         SavePictureEventListener savePictureEventListenerInstance = injector.getInstance(SavePictureEventListener.class);
         RemovePictureEventListener removePictureEventListenerInstance = injector.getInstance(RemovePictureEventListener.class);
+        DeleteObject deleteObject = injector.getInstance(DeleteObject.class);
         
         eb.register(savePictureEventListenerInstance);
         eb.register(removePictureEventListenerInstance);
+        eb.register(deleteObject);
         return eb;
     }
 }

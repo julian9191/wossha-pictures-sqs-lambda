@@ -12,10 +12,14 @@ import com.wossha.json.events.events.pictures.SavePictureEvent.SavePictureEvent;
 import com.wossha.json.events.exceptions.RecoverableException;
 import com.wossha.pictures.sqs.dto.PictureFileDTO;
 import com.wossha.pictures.sqs.infrastructure.repositories.FileRepository;
+import com.wossha.pictures.sqs.infrastructure.s3.DeleteObject;
 
 public class SavePictureEventListener implements EventProcessor<SavePictureEvent>  {
     private SavePictureEvent data;
 
+    @Inject
+   	private DeleteObject deleteObject;
+    
     @Inject
     private FileRepository repo;
     
@@ -44,22 +48,27 @@ public class SavePictureEventListener implements EventProcessor<SavePictureEvent
         	dto.setFileType(picture.getFileType());
         	dto.setType(picture.getType());
         	dto.setFileSize(picture.getFileSize());
-        	
-        	String[] parts = picture.getValue().split(",");
-        	String base64 = parts[parts.length-1];
-        	
-        	byte[] fileByteArray = Base64.getDecoder().decode(base64.getBytes());
-
-    		dto.setValue(fileByteArray);
     		repo.add(dto);
 		}
         
         List<String> uuids = data.getMessage().getPictures().stream().map(PictureInfo::getUuidPictureToRemove).collect(Collectors.toList());
         
         if(uuids != null && !uuids.isEmpty()) {
+        	deleteInS3(uuids);
 			repo.removeByUuids(uuids);
 		}
 
         return events;
     }
+    
+    private void deleteInS3(List<String> uuids) {
+		try {
+			for (String uuid : uuids) {
+				deleteObject.delete(uuid);
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 }

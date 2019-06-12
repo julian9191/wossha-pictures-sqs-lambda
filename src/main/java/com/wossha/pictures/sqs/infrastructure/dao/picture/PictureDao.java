@@ -23,7 +23,7 @@ public abstract  class PictureDao {
 	//INSERTS--------------------------------------------------------------------------------------------------------------------------------------
     
 	@RegisterMapper(PictureMapperJdbi.class)
-    @SqlUpdate("Insert into TWSS_PICTURES (UUID,USERNAME,NAME,FILE_TYPE,TYPE,FILE_SIZE,VALUE) values (:picture.uuid, :picture.username, :picture.name, :picture.fileType, :picture.type, :picture.fileSize, :picture.value)")
+    @SqlUpdate("Insert into TWSS_PICTURES (UUID,USERNAME,NAME,FILE_TYPE,TYPE,FILE_SIZE) values (:picture.uuid, :picture.username, :picture.name, :picture.fileType, :picture.type, :picture.fileSize)")
     public abstract void add(@BindBean("picture") PictureFileDTO picture);
 	
 	//REMOVES--------------------------------------------------------------------------------------------------------------------------------------
